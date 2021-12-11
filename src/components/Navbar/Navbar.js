@@ -1,0 +1,83 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import logo from '../../pictures/logo.webp'
+import LARAVEL_SERVER from '../Variable';
+
+class Navbar extends React.Component{
+
+constructor(){
+    super()
+    this.state={
+        token:null,
+        userInfos:[],
+        name:'',
+        userInfo:""
+    }
+}
+
+componentDidMount(){
+    let headers={headers:{'API_TOKEN':localStorage.getItem('token')}}
+    let id =localStorage.getItem('token');
+    axios.get(`${LARAVEL_SERVER}/show/${id}`, headers)
+        .then(res => {this.setState({userInfos:res.data.data[0]}) })
+        .catch(error => {})
+} 
+    
+logout = () =>{
+    localStorage.setItem('token', '')
+    localStorage.clear()
+    this.setState({token:null})
+}
+    render(){
+
+        return(
+            <>
+                <ul className="nav justify-content-end" className="nav">
+
+                    {
+                        localStorage.getItem('token')
+                        ?
+                        
+                        <>
+                            <li className="nav-item">
+                                <Link className="nav-link active" aria-current="page" to="/player"><img src={logo} alt="" width="100px"/></Link>
+                            </li>
+                            <li className="nav-item">
+                                <h1 className="titleNav">Bienvenue au Quiz de Noël</h1>
+                            </li>
+                            <li className="nav-item" className="identifiantNav">
+                                {this.state.userInfos.map((userInfo)=>
+                                <>
+                                    <Link className="nav-link dropdown-toggle nav-link-color" data-bs-toggle="dropdown" to="/" role="button" aria-expanded="false">Joyeux Noël {userInfo.userName}  🎄 </Link>
+                               
+                                <ul className="dropdown-menu">
+                                    <li><Link className="dropdown-item" to={`/account/${userInfo.userId}`}>Compte</Link></li>
+                                    
+                                        {userInfo.userAdmin ===1
+                                            ?
+                                            <li><Link className="dropdown-item" to="/summary">Tableau de bord</Link></li>
+                                            :
+                                            null
+                                        }
+                                    <li><Link className='dropdown-item' onClick={()=>this.logout()} to="/">Déconnexion</Link></li>
+                                </ul>
+                                </>
+                                )}
+                            </li>
+                        </>
+                        :
+                        <>
+                            <li className="nav-item">
+                                <Link className="nav-link active" aria-current="page" to="/"><img src={logo} alt="" width="100px"/></Link>
+                            </li>
+                        </>
+                    }
+                   
+                </ul>
+            </>
+        )
+    }
+}
+
+export default Navbar;
