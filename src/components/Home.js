@@ -19,7 +19,7 @@ class Home extends React.Component{
         }
         return(
             <>
-              <div className="containerBodyHome">
+              <div className="containerBodyHome"> 
                 <div className="containerHome">
                
                     <h1>Bienvenue au Quizz de Noël</h1>
